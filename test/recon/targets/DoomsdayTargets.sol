@@ -31,7 +31,7 @@ abstract contract DoomsdayTargets is
     }
 
     //TODO
-    function morpho_liquidate_sepecific_market_clamped(uint256 amount) public asActor stateless {
+    /* function morpho_liquidate_sepecific_market_clamped(uint256 amount) public asActor stateless {
         MarketParams memory params = IMorpho(address(morpho)).idToMarketParams(id);
 
         morpho.supplyCollateral(params, amount, _getActor(), "");
@@ -45,5 +45,5 @@ abstract contract DoomsdayTargets is
         vm.warp(block.timestamp + 30 days);   
 
         morpho.liquidate(params, _getActor(), seizedAssets, 0, "");
-    }
+    } */
 }

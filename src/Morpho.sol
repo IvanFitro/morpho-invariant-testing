@@ -552,4 +552,12 @@ contract Morpho is IMorphoStaticTyping {
             }
         }
     }
+
+    //@audit-info custom functions
+    function isHealthy(MarketParams memory marketParams, address borrower) external view returns (bool) {
+        Id id = marketParams.id();
+        require(market[id].lastUpdate != 0, ErrorsLib.MARKET_NOT_CREATED);
+
+        return _isHealthy(marketParams, id, borrower);
+    }
 }

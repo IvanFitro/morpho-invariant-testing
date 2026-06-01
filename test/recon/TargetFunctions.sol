@@ -26,66 +26,65 @@ abstract contract TargetFunctions is
 {
 
 
-
     /// CUSTOM TARGET FUNCTIONS - Add your own target functions here ///
-    function morpho_supply_sepecific_market_assets_0data_clamped( uint256 assets, address onBehalf) public {
-        morpho_supply(marketParams, assets, 0, onBehalf, "");
+    function morpho_supply_sepecific_market_assets_clamped( uint256 assets) public updateGhostsWithType(OpType.SUPPLY) {
+        morpho_supply(activeMarketParams, assets, 0, _getActor(), "");
     }
 
-    function morpho_supply_sepecific_market_shares_0data_clamped( uint256 shares, address onBehalf) public {
-        morpho_supply(marketParams, 0, shares, onBehalf, "");
+    function morpho_supply_sepecific_market_shares_clamped( uint256 shares) public updateGhostsWithType(OpType.SUPPLY) {
+        morpho_supply(activeMarketParams, 0, shares, _getActor(), "");
     }
 
-    function morpho_setFee_clamped(uint256 newFee) public asAdmin() {
+    function morpho_setFee_clamped(uint256 newFee) public {
         newFee = between(newFee, 0, 0.25e18);
-        morpho_setFee(marketParams, newFee);
+        morpho_setFee(activeMarketParams, newFee);
     }
 
-    function morpho_withdraw_sepecific_market_assets_0data_clamped(uint256 assets, address onBehalf) public {
-        morpho_withdraw(marketParams, assets, 0, _getActor(), address(this));    
+    function morpho_withdraw_sepecific_market_assets_clamped(uint256 assets) public updateGhostsWithType(OpType.WITHDRAW) {
+        morpho_withdraw(activeMarketParams, assets, 0, _getActor(), address(this));    
     }
 
-    function morpho_withdraw_sepecific_market_shares_0data_clamped(uint256 shares, address onBehalf) public {
-        morpho_withdraw(marketParams, 0, shares, _getActor(), address(this));    
+    function morpho_withdraw_sepecific_market_shares_clamped(uint256 shares) public updateGhostsWithType(OpType.WITHDRAW) {
+        morpho_withdraw(activeMarketParams, 0, shares, _getActor(), address(this));    
     }
 
-    function morpho_borrow_sepecific_market_assets_0data_clamped(uint256 assets, address onBehalf) public {
-        morpho_borrow(marketParams, assets, 0, _getActor(), address(this));
+    function morpho_borrow_sepecific_market_assets_clamped(uint256 assets) public updateGhostsWithType(OpType.BORROW) {
+        morpho_borrow(activeMarketParams, assets, 0, _getActor(), address(this));
         
     }
 
-    function morpho_borrow_sepecific_market_shares_0data_clamped(uint256 shares, address onBehalf) public {
-        morpho_borrow(marketParams, 0, shares, _getActor(), address(this));
+    function morpho_borrow_sepecific_market_shares_clamped(uint256 shares) public updateGhostsWithType(OpType.BORROW) {
+        morpho_borrow(activeMarketParams, 0, shares, _getActor(), address(this));
         
     }
 
-    function morpho_repay_sepecific_market_assets_0data_clamped(uint256 assets, address onBehalf) public {
-        morpho_repay(marketParams, assets, 0, _getActor(), "");
+    function morpho_repay_sepecific_market_assets_clamped(uint256 assets) public updateGhostsWithType(OpType.REPAY) {
+        morpho_repay(activeMarketParams, assets, 0, _getActor(), "");
     }
 
-    function morpho_repay_sepecific_market_shares_0data_clamped(uint256 shares, address onBehalf) public {
-        morpho_repay(marketParams, 0, shares, _getActor(), "");
+    function morpho_repay_sepecific_market_shares_clamped(uint256 shares) public updateGhostsWithType(OpType.REPAY) {
+        morpho_repay(activeMarketParams, 0, shares, _getActor(), "");
     }
 
-    function morpho_supplyCollateral_sepecific_market_assets_0data_clamped(uint256 assets, address onBehalf) public {
-        morpho_supplyCollateral(marketParams, assets, _getActor(), "");
+    function morpho_supplyCollateral_sepecific_market_assets_clamped(uint256 assets) public {
+        morpho_supplyCollateral(activeMarketParams, assets, _getActor(), "");
     }
 
-    function morpho_withdrawCollateral_sepecific_market_assets_0data_clamped(uint256 assets, address onBehalf) public {
-        morpho_withdrawCollateral(marketParams, assets, _getActor(), address(this));
+    function morpho_withdrawCollateral_sepecific_market_assets_clamped(uint256 assets) public {
+        morpho_withdrawCollateral(activeMarketParams, assets, _getActor(), address(this));
     }
 
-    function morpho_flashLoan_WithMock(uint256 assets) public {
+    function morpho_flashLoan_WithMock(uint256 assets) public updateGhostsWithType(OpType.FLASHLOAN) {
         
         FlashBorrowerMock flashBorrower = new FlashBorrowerMock(IMorpho(address(morpho)));
 
-        bytes memory data = abi.encode(address(asset));
+        bytes memory data = abi.encode(activeAsset);
         
-        flashBorrower.flashLoan(address(asset), assets, data);
+        flashBorrower.flashLoan(activeAsset, assets, data);
     }
 
     function morpho_accruesInterests_sepecific_market(uint256 assets, address onBehalf) public asActor {
-        morpho_accrueInterest(marketParams);
+        morpho_accrueInterest(activeMarketParams);
     }
 
     function morpho_signature() public asActor {
@@ -114,6 +113,19 @@ abstract contract TargetFunctions is
         Signature memory sig = Signature({v: v, r: r, s: s});
 
         morpho.setAuthorizationWithSig(auth, sig);
+    }
+
+    //-------------------MARKET CREATION-------------------
+    function morpho_createMarket_clamped(uint256 loanTokenEntropy, uint256 collateralTokenEntropy, uint256 lltv) public asAdmin {
+        add_market(loanTokenEntropy, collateralTokenEntropy, lltv);
+    }
+
+    function morpho_changeActiveMarket_clamped(uint256 marketEntropy) public asActor {
+        _switchMarket(marketEntropy);
+    }   
+
+    function morpho_switchActor_clamped(uint256 actorEntropy) public asActor {
+        _getActorThenSwitchActor(actorEntropy);
     }
 
     /// AUTO GENERATED TARGET FUNCTIONS - WARNING: DO NOT DELETE OR MODIFY THIS LINE ///
@@ -158,16 +170,12 @@ abstract contract TargetFunctions is
         morpho.setAuthorizationWithSig(authorization, signature);
     }
 
-    function morpho_setFee(MarketParams memory marketParams, uint256 newFee) public asActor {
+    function morpho_setFee(MarketParams memory marketParams, uint256 newFee) public asAdmin {
         morpho.setFee(marketParams, newFee);
     }
 
-    function morpho_setFeeRecipient(address newFeeRecipient) public asActor {
+    function morpho_setFeeRecipient(address newFeeRecipient) public asAdmin {
         morpho.setFeeRecipient(newFeeRecipient);
-    }
-
-    function morpho_setOwner(address newOwner) public asActor {
-        morpho.setOwner(newOwner);
     }
 
     function morpho_supply(MarketParams memory marketParams, uint256 assets, uint256 shares, address onBehalf, bytes memory data) public asActor {
