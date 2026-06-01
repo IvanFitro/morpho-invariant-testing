@@ -117,7 +117,7 @@ abstract contract TargetFunctions is
 
     //-------------------MARKET CREATION-------------------
     function morpho_createMarket_clamped(uint256 loanTokenEntropy, uint256 collateralTokenEntropy, uint256 lltv) public asAdmin {
-        add_market(loanTokenEntropy, collateralTokenEntropy, lltv);
+        addNewmarket(loanTokenEntropy, collateralTokenEntropy, lltv);
     }
 
     function morpho_changeActiveMarket_clamped(uint256 marketEntropy) public asActor {
@@ -125,7 +125,7 @@ abstract contract TargetFunctions is
     }   
 
     function morpho_switchActor_clamped(uint256 actorEntropy) public asActor {
-        _getActorThenSwitchActor(actorEntropy);
+        _changeActor(actorEntropy);
     }
 
     /// AUTO GENERATED TARGET FUNCTIONS - WARNING: DO NOT DELETE OR MODIFY THIS LINE ///

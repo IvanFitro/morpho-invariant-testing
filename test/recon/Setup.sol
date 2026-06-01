@@ -38,18 +38,17 @@ abstract contract Setup is BaseSetup, ActorManager, AssetManager, Utils {
     function setup() internal virtual override {
         morpho = new Morpho(owner);
 
-        // Required mocks
+        // Mocks
         iIrmMock = new IIrmMock();
         iMorphoFlashLoanCallbackMock = new IMorphoFlashLoanCallbackMock();
         iOracleMock = new IOracleMock();
 
-        // Enable our mock IRM
         vm.prank(owner);
         morpho.enableIrm(address(iIrmMock));
 
-        _addActor(address("Alice"));
-        _addActor(address("Bob"));
-        _addActor(address("Charlie"));
+        _addActor(address(0x1234));
+        _addActor(address(0x5678));
+        _addActor(address(0x9ABC));
 
         _newAsset(18);
         _newAsset(8);
@@ -77,18 +76,18 @@ abstract contract Setup is BaseSetup, ActorManager, AssetManager, Utils {
 
     ///-------------------HELPER FUNCTIONS-------------------
 
-    function add_market(uint256 loanTokenEntropy, uint256 collateralTokenEntropy, uint256 lltv) public {
+    function addNewmarket(uint256 loanEntropy, uint256 collateralEntropy, uint256 lltv) public {
 
         require(allMarketParams.length < 5, "Too many markets created"); 
 
         //loan token
-        uint256 assetsLength = _getAssets(  ).length;
-        uint256 loanTokenIndex = loanTokenEntropy % assetsLength;
+        uint256 assetsLength = _getAssets().length;
+        uint256 loanTokenIndex = loanEntropy % assetsLength;
         _switchAsset(loanTokenIndex);
         address loanToken = _getAsset();
 
         //collateral
-        uint256 collateralTokenIndex = collateralTokenEntropy % assetsLength;
+        uint256 collateralTokenIndex = collateralEntropy % assetsLength;
         _switchAsset(collateralTokenIndex);
         address collateralToken = _getAsset();
 
@@ -115,7 +114,7 @@ abstract contract Setup is BaseSetup, ActorManager, AssetManager, Utils {
         activeAsset = activeMarketParams.loanToken;
     }
 
-    function _getActorThenSwitchActor(uint256 actorEntropy) internal returns (address prevActor) {
+    function _changeActor(uint256 actorEntropy) internal returns (address prevActor) {
         address actor = _getActor();
 
         uint256 actorIndex = actorEntropy % _getActors().length;
