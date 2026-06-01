@@ -75,12 +75,6 @@ abstract contract Setup is BaseSetup, ActorManager, AssetManager, Utils {
         vm.stopPrank();
     }
 
-    modifier asFlashLoanCallback {
-        vm.startPrank(address(iMorphoFlashLoanCallbackMock));
-        _;
-        vm.stopPrank();
-    }
-
     ///-------------------HELPER FUNCTIONS-------------------
 
     function add_market(uint256 loanTokenEntropy, uint256 collateralTokenEntropy, uint256 lltv) public {
