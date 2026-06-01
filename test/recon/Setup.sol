@@ -51,9 +51,9 @@ abstract contract Setup is BaseSetup, ActorManager, AssetManager, Utils {
         vm.prank(owner);
         morpho.enableIrm(address(iIrmMock));
 
-        _addActor(address(0xAAAA));
-        _addActor(address(0xBBBB));
-        _addActor(address(0xCCCC));
+        _addActor(address("Alice"));
+        _addActor(address("Bob"));
+        _addActor(address("Charlie"));
 
         _newAsset(18);
         _newAsset(8);
@@ -62,8 +62,6 @@ abstract contract Setup is BaseSetup, ActorManager, AssetManager, Utils {
         address[] memory approvalArray = new address[](1);
         approvalArray[0] = address(morpho);
         _finalizeAssetDeployment(_getActors(), approvalArray, type(uint88).max);
-
-        // Starts with activeMarketParams empty
     }
 
     /// === MODIFIERS === ///
